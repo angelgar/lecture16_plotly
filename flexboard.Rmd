@@ -62,13 +62,16 @@ airbnb_data %>%
 
 ```{r}
 
-scatter_ggplot = airbnb_data %>%
-  ggplot(aes(x = longitude, y = latitude, color = price)) +
-  geom_point(alpha = 0.25) +
-  scale_color_viridis() +
-  coord_cartesian() +
-  theme_classic()
+common_neighborhoods =
+  airbnb_data %>% 
+  count(neighbourhood, sort = TRUE) %>% 
+  select(neighbourhood)
+## Selecting by n
 
-ggplotly(scatter_ggplot)
+inner_join(airbnb_data, common_neighborhoods,
+             by = "neighbourhood") %>% 
+  mutate(neighbourhood = fct_reorder(neighbourhood, price)) %>% 
+  plot_ly(y = ~price, color = ~neighbourhood, type = "box",
+          colors = "Set2")
 
 ```
